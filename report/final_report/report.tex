@@ -1,0 +1,230 @@
+
+
+\documentclass[11pt,a4paper]{article}
+
+% Page layout
+\usepackage[a4paper, margin=1.5cm]{geometry}
+
+% Font and encoding
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+
+% Math packages
+\usepackage{amsmath}    % Basic math symbols
+\usepackage{amssymb}    % Additional math symbols
+\usepackage{amsfonts}   % Math fonts
+\usepackage{amsthm}     % Theorem environments
+\usepackage{mathtools}  % Extensions to amsmath
+\usepackage{bm}         % Bold math symbols
+\usepackage{cancel}     % Cancel out terms in equations
+
+% Graphics and figures
+\usepackage{graphicx}   % Include graphics
+
+\usepackage[font=small,labelfont=bf,labelsep=quad,format=line]{caption}
+%\captionsetup{font=small,format=line}
+
+\usepackage{float}      % Control float placements
+\usepackage{wrapfig}    % Wrapping text around figures
+\usepackage{subfig}
+\usepackage{calc}
+
+% Tables
+\usepackage{booktabs}   % Professional-looking tables
+\usepackage{array}      % Custom table column formatting
+\usepackage{multirow}   % Multi-row cells in tables
+\usepackage{longtable}  % Tables across pages
+\usepackage{tabularx}   % Tables with fixed-width columns
+
+% Hyperlinks
+
+% Bibliography (for BibTeX or BibLaTeX use)
+% Uncomment below to use BibLaTeX, and set backend=biber for UTF-8 compatibility
+%\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+%\addbibresource{cw.bib}
+%\bibliographystyle{plain}
+%\bibliography{cw}
+
+
+% Appendix
+\usepackage[toc,page]{appendix}
+
+% Formatting
+\usepackage{setspace}
+%\onehalfspacing         % Set line spacing to 1.5
+\usepackage{titlesec}   % Customize section titles
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+\sectionfont{\normalsize} % Set section titles to large size
+\subsectionfont{\normalsize} % Set subsection titles to normal size
+\subsubsectionfont{\small} % Set subsubsection titles to small size
+
+\usepackage[ruled]{algorithm2e}
+
+% References
+
+\usepackage{hyperref}
+\usepackage{cleveref}   % Smart referencing with \cref and \Cref
+\usepackage{sectsty}
+
+
+
+% Title page
+\title{Von Mises Drosophila Dual-Goal Dynamics}
+\author{Melissa Tian, Tim Lin}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+\abstract{ Hello world. }
+
+\section{Maths}%
+  \label{sec:Maths}
+
+  Taking a reference frame where the two goals, $\theta_{\mathrm{goal}}^{(0)}$ and $\theta_{\mathrm{goal}}^{(1)}$, are located at $\delta$ and $-\delta$ respectively, we can write the Von Mises bump representation, under this dual-goal, for a goal neuron with preference $\phi$ as:  
+
+  \begin{align}
+    g _{\mathrm{goal}}(\phi, \delta) &= \exp(\kappa_{\mathrm{goal}} \cos(\delta - \phi)) + \exp(\kappa_{\mathrm{goal}} \cos(-\delta - \phi)) 
+  \end{align}
+
+  similarly write down the heading neurons with preference $\phi$ firing to the current headin $\theta$ as: 
+
+  \begin{align}
+    g_{\mathrm{heading}}(\phi, \theta) &= \exp(\kappa_{\mathrm{heading}} \cos(\theta - \phi))
+  \end{align}
+
+  Considering a PFL cell with goal preference $\phi$, we abstract that each cell receives direct a synaptic connection from the associated goal neuron, as well as a synaptic connection from a heading neuron tuned to $\Delta_{\mathrm{pop}}$ away from $\phi$. Showing the PFL3L subpopulation as an example, we can write down the total drive to a PFL3L neuron with preference $\phi$ , $h_{\mathrm{P3L}}$, and the neural activity after the nonlinearity $f$, $g_{\mathrm{P3L}}$, as:
+
+  \begin{align}
+    h_{\mathrm{P3L}}(\theta, \phi, \delta) &= S \cdot g_{\mathrm{heading}}(\phi - \Delta_{\mathrm{P3L}}, \theta)  + A \cdot g_{\mathrm{goal}}(\phi, \delta) \notag \\
+    & = S \cdot \exp(\kappa_{\mathrm{heading}} \cos(\theta - (\phi - \Delta_{\mathrm{P3L}}))) \notag  \\
+    & \quad + A \cdot (\exp(\kappa_{\mathrm{goal}} \cos(\delta - \phi)) + \exp(\kappa_{\mathrm{goal}} \cos(-\delta - \phi))) \notag \\
+    g_{\mathrm{P3L}}(\theta, \phi, \delta) &= f(h_{\mathrm{P3L}}(\theta, \phi, \delta)) \label{eq:P3L}
+  \end{align}
+
+  As downstream neurons to the PFLs (DNa02 and DNa03) effectively sum inputs from all neurons of each population (PFL3L/R, PFL2), it behooves us to consider the population activity as a whole, integrating \cref{eq:P3L} over all $\phi$. We can write down the population activity of the PFL3L subpopulation
+
+  \begin{align}
+    G_{\mathrm{P3L}}(\theta, \delta) &= \int_{-\pi}^{\pi} g_{\mathrm{P3L}}(\theta, \phi, \delta) d\phi \notag \\
+    & = \int_{-\pi}^{\pi} f(h_{\mathrm{P3L}}(\theta, \phi, \delta)) d\phi
+  \end{align}
+
+  We choose the quadratic nonlinearty $f(x) = x^2$, as a common choice in neuroscience and one that allows conjunctive tuning for heading and goal states on the level of PFL3 neurons. This is important to allow differences between the L and R populations after integration.
+
+  Hence we have the following: 
+
+  \begin{align}
+    G_{\mathrm{P3L}}(\theta, \delta) &= \int_{-\pi}^{\pi} h_{\mathrm{P3L}}(\theta, \phi, \delta)^2 d\phi \notag \\
+    & = \int_{-\pi}^{\pi} \left(S \cdot g_{\mathrm{heading}}(\phi - \Delta_{\mathrm{P3L}}, \theta) + A \cdot g_{\mathrm{goal}}(\phi, \delta)\right)^2 d\phi\notag \\
+    & = \int_{-\pi}^{\pi} \left(S^2 \cdot g_{\mathrm{heading}}(\phi - \Delta_\mathrm{P3L}, \theta)^2 + A^2 \cdot g_{\mathrm{goal}}(\phi, \delta)^2\notag \\
+    & \quad \quad + 2SA \cdot g_{\mathrm{heading}}(\phi - \Delta_{\mathrm{P3L}}, \theta) \cdot g_{\mathrm{goal}}(\phi, \delta)\right) d\phi
+  \end{align}
+
+  As $\int_{-\pi}^{\pi}g_{\mathrm{heading}}(\phi - \Delta_{\mathrm{P3L}}, \theta)^{2} d\phi = \int_{-\pi}^{\pi}g_{\mathrm{heading}}(\phi + \Delta_{\mathrm{P3L}}, \theta)^{2} d \phi$, we can simplify the difference in population activity between the PFL3L and PFL3R subpopulations as: 
+
+  \begin{align}
+    G_{\mathrm{P3L}}(\theta, \delta) - G_{\mathrm{P3R}}(\theta, \delta) & = 2SA \int_{-\pi}^{\pi} \left(g_{\mathrm{heading}}(\phi - \Delta_{\mathrm{P3L}}, \theta) - g_{\mathrm{heading}}(\phi + \Delta_{\mathrm{P3L}}, \theta)\right) g_{\mathrm{goal}}(\phi, \delta) d\phi \notag \\ 
+    & = 2SA \int_{-\pi}^{\pi} \left(\exp(\kappa_{\mathrm{heading}} \cos(\theta - (\phi - \Delta_{\mathrm{P3L}}))) - \exp(\kappa_{\mathrm{heading}} \cos(\theta - (\phi + \Delta_{\mathrm{P3L}})))\right) \notag \\
+    & \quad \quad \cdot (\exp(\kappa_{\mathrm{goal}} \cos(\delta - \phi)) + \exp(\kappa_{\mathrm{goal}} \cos(-\delta - \phi))) d\phi
+  \end{align}
+
+  Let $\xi_\phi(a, b): S ^{1} \times S ^{1} \to \mathbb{R} = \exp(\kappa_{\mathrm{heading}}\cos(a - \phi) + \kappa_{\mathrm{goal}} \cos(b - \phi))$, we can rewrite the above as:
+
+  \begin{align}
+    G_{\mathrm{P3L}}(\theta, \delta) - G_{\mathrm{P3R}}(\theta, \delta) & = 2SA \int_{-\pi}^{\pi} \left(\xi_\phi(\theta + \Delta_{\mathrm{P3L}}, \delta) + \xi_\phi(\theta + \Delta_{\mathrm{P3L}}, -\delta) - \xi_\phi(\theta - \Delta_{\mathrm{P3L}}, \delta) - \xi_\phi(\theta - \Delta_{\mathrm{P3L}}, -\delta)\right) d\phi
+  \end{align}
+  
+  Noting that: 
+
+  \begin{align}
+    \kappa_{\mathrm{heading}} \cos(\phi - a) + \kappa_{\mathrm{goal}}\cos(\phi - b) & = \kappa(a, b) \cos(\phi - \mu)\notag \\
+    \text{where } \kappa(a, b) & = \sqrt{\kappa_{\mathrm{heading}}^2 + \kappa_{\mathrm{goal}}^2 + 2\kappa_{\mathrm{heading}}\kappa_{\mathrm{goal}}\cos(a - b)} \notag 
+  \end{align}
+
+  We can evaluate each piece of the integral as: 
+
+  \begin{align}
+    \int_{-\pi}^{\pi} \xi_\phi(a, b) d\phi & = \int_{-\pi}^{\pi} \exp(\kappa_{\mathrm{heading}}\cos(a - \phi) + \kappa_{\mathrm{goal}} \cos(b - \phi)) d\phi \notag \\
+    & = \int_{-\pi}^{\pi} \exp(\kappa(a, b) \cos(\phi - \mu)) d\phi \notag \\
+    & = 2\pi I_0(\kappa(a, b))
+  \end{align}
+
+  Where $I_0$ is the modified Bessel function of the first kind, order 0. Hence we have the following closed form solution for the difference in population activity between the PFL3L and PFL3R subpopulations:
+
+  \begin{align}
+    G_{\mathrm{P3L}}(\theta, \delta) - G_{\mathrm{P3R}}(\theta, \delta) & = 4\pi SA \left(I_0(\kappa(\theta + \Delta_{\mathrm{P3L}}, \delta)) + I_0(\kappa(\theta + \Delta_{\mathrm{P3L}},-  \delta))  \notag\\
+    & \quad - I_0(\kappa(\theta - \Delta_{\mathrm{P3L}}, \delta)) - I_0(\kappa(\theta - \Delta_{\mathrm{P3L}}, -\delta))\right)
+  \end{align}
+
+
+  Now, in the simplified system where there is no PFL2 input and the DNa02s and DNa03s simply sum the PFL3L and PFL3R population activity respectively, we can write down the steering drive as:
+
+  \begin{align}
+    U(\theta, \delta) = G_{\mathrm{P3L}}(\theta, \delta) - G_{\mathrm{P3R}}(\theta, \delta) 
+  \end{align}
+
+
+  We then taylor expend $U(\theta, \delta)$ around $\theta = 0$ for our dreamed Duffing connection. 
+
+  \begin{align}
+    U(\theta, \delta) & = U(0, \delta) + U'(0, \delta) \theta + \frac{1}{2} U''(0, \delta) \theta^2 + \frac{1}{6} U'''(0, \delta) \theta^3 + O(\theta^4)
+  \end{align}
+
+  The intercept:
+
+  \begin{align}
+    U(0, \delta) & = 4\pi SA \left(I_0(\kappa(\Delta_{\mathrm{P3L}}, \delta)) + I_0(\kappa(\Delta_{\mathrm{P3L}}, -\delta)) - I_0(\kappa(-\Delta_{\mathrm{P3L}}, \delta)) - I_0(\kappa(-\Delta_{\mathrm{P3L}}, -\delta))\right) \notag \\
+    & = 0
+  \end{align}
+
+  First order coefficient:
+  \begin{align}
+    \frac{d}{d\theta}I_0(\kappa(\theta + a), b) & = \frac{d}{d\kappa}I_0 \cdot \frac{d}{d\theta}\kappa(\theta + a, b) \notag \\
+    & =- I_1(\kappa(\theta + a, b)) \cdot \frac{\kappa_{\mathrm{heading}} \kappa_{\mathrm{goal}} \sin(\theta + a - b)}{\sqrt{\kappa_{\mathrm{heading}}^2 + \kappa_{\mathrm{goal}}^2 + 2\kappa_{\mathrm{heading}}\kappa_{\mathrm{goal}}\cos(\theta + a - b)}}
+  \end{align}
+  
+  Hence: 
+  \begin{align}
+    U'(0, \delta) &= -4\pi SA \frac{I_1(\kappa(\Delta_{\mathrm{P3L}}, \delta))}{\kappa(\Delta_{\mathrm{P3L}}, \delta)} \cdot \kappa_{\mathrm{heading}} \kappa_{\mathrm{goal}} \sin(\Delta_{\mathrm{P3L}} - \delta) \notag \\
+    & \quad - 4\pi SA \frac{I_1(\kappa(\Delta_{\mathrm{P3L}}, -\delta))}{\kappa(\Delta_{\mathrm{P3L}}, -\delta)} \cdot \kappa_{\mathrm{heading}} \kappa_{\mathrm{goal}} \sin(\Delta_{\mathrm{P3L}} + \delta)
+  \end{align}
+
+  The second order coefficient is $0$ for that the function is odd around $\theta = 0$. 
+
+  The third order coefficient:
+  \begin{align}
+    \frac{d ^{3}}{d \theta ^{3}} I_0(\kappa(\theta + a), b) & = I_1 ^{''} (\kappa(\theta + a, b)) \cdot \kappa{'}(\theta + a, b)^3 + 3I_1'(\kappa(\theta + a, b)) \cdot \kappa{'}(\theta + a, b) \cdot \kappa{''}(\theta + a, b) \notag \\
+    & \quad + I_1(\kappa(\theta + a, b)) \cdot \kappa{'''}(\theta + a, b) \notag\\
+    \kappa {''}(\theta + a, b)& = \frac{\kappa_{\mathrm{heading}} \kappa_{\mathrm{goal}} \cos(\theta + a - b) - (\kappa')^{2}}{\kappa(\theta + a, b)} \notag \\
+    \kappa {''''} (\theta + a, b) & = \frac{-\kappa' - 3\kappa' \kappa''}{\kappa(\theta + a, b)} \notag\\
+    I'_1(\kappa) & = \frac{1}{2}(I_0(\kappa) + I_2(\kappa)) \notag \\
+    I''_1(\kappa) & = \frac{1}{4}(3I_1(\kappa) + I_3(\kappa)) \notag \\
+    \therefore  \frac{d ^{3}}{d \theta ^{3}} I_0(\kappa(\theta + a), b) &= \kappa ' \left[ (\frac{3I_1{\kappa} + I_3(\kappa)}{4})(\kappa')^{2} + 3 I _2(\kappa)\kappa'' - I_1(\kappa) \right]
+  \end{align}
+
+  Hence: 
+  \begin{align}
+    U'''(0, \delta) & = 8\pi SA \sum_{u \in \left\{ \Delta \pm \delta \right\}} \kappa'(u)\left[ \frac{3I_1(\kappa(u)) + I_3(\kappa(u))}{4}(\kappa'(u))^{2} + 3I_2(\kappa(u))\kappa(u)'' - I_1(\kappa(u)) \right]
+  \end{align}
+
+
+\setcounter{figure}{0}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\figurename}{Supplementary Figure}
+
+\setcounter{subsection}{0}
+\renewcommand{\thesubsection}{S\arabic{subsection}}
+\renewcommand{\thesubsubsection}{S\arabic{subsection}.\arabic{subsubsection}}
+
+% new page
+\clearpage
+
+%\input{appendix.tex}
+
+
+\end{document}
