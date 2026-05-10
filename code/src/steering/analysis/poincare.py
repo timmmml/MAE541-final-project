@@ -12,6 +12,19 @@ from steering.models.base import SteeringModel
 from steering.params import ForcingParams, ModelParams
 
 
+def _normalize_initial_states(state0: np.ndarray | None) -> np.ndarray:
+    """Return initial conditions as an array of shape ``(n_states, state_dim)``."""
+    if state0 is None:
+        return np.array([[0.1, 0.0]], dtype=float)
+
+    states0 = np.asarray(state0, dtype=float)
+    if states0.ndim == 1:
+        return states0[None, :]
+    if states0.ndim == 2:
+        return states0.copy()
+    raise ValueError("state0 must be a 1D state vector or a 2D array of states")
+
+
 def stroboscopic_section(
     result: SimulationResult,
     omega: float,
@@ -60,11 +73,13 @@ def bifurcation_diagram_poincare(
     For each sweep value we run ``(transient + record)`` forcing periods and
     record ``theta`` at stroboscopic times. ``sweep_param`` can be any field of
     ``ModelParams`` or ``F``, ``omega``, ``forcing_type`` (the latter on the
-    forcing). With ``continuation=True`` each run starts from the previous
-    run's final state, smoothing the bifurcation tracking.
+    forcing). ``state0`` may be a single initial condition of shape
+    ``(state_dim,)`` or multiple initial conditions of shape
+    ``(n_initial_conditions, state_dim)``. With ``continuation=True`` each run
+    starts from the previous run's final state for each initial condition,
+    smoothing the bifurcation tracking.
     """
-    if state0 is None:
-        state0 = np.array([0.1, 0.0])
+    initial_states = _normalize_initial_states(state0)
     dyn_gamma = AccelerationDynamics(
         model=dynamics.model, gamma=gamma, topology=dynamics.topology
     )
@@ -74,7 +89,7 @@ def bifurcation_diagram_poincare(
 
     out_thetas: list[np.ndarray] = []
     out_vs: list[np.ndarray] = []
-    cur_state = np.array(state0, dtype=float)
+    cur_states = initial_states.copy()
     for v in np.asarray(sweep_values):
         if sweep_param in forcing_keys:
             f_kwargs = {"omega": omega}
@@ -89,12 +104,28 @@ def bifurcation_diagram_poincare(
         sim = Simulation(
             dyn_gamma, cur_params, forcing, rtol=rtol, atol=atol
         )
-        result = sim.run(cur_state, (0.0, t_total), dense_output=True)
-        section = stroboscopic_section(result, omega, transient_periods=n_periods_transient)
-        out_thetas.append(section[:, 0])
-        out_vs.append(section[:, 1])
-        if continuation and section.size > 0:
-            cur_state = section[-1].copy()
+
+        thetas_for_value: list[np.ndarray] = []
+        vs_for_value: list[np.ndarray] = []
+        next_states: list[np.ndarray] = []
+        for cur_state in cur_states:
+            result = sim.run(cur_state, (0.0, t_total), dense_output=True)
+            section = stroboscopic_section(result, omega, transient_periods=n_periods_transient)
+            if section.size > 0:
+                thetas_for_value.append(section[:, 0])
+                vs_for_value.append(section[:, 1])
+                next_states.append(section[-1].copy())
+            else:
+                next_states.append(np.array(cur_state, copy=True))
+
+        out_thetas.append(
+            np.concatenate(thetas_for_value) if thetas_for_value else np.array([], dtype=float)
+        )
+        out_vs.append(
+            np.concatenate(vs_for_value) if vs_for_value else np.array([], dtype=float)
+        )
+        if continuation:
+            cur_states = np.asarray(next_states, dtype=float)
     return {
         "sweep_param": sweep_param,
         "sweep_values": np.asarray(sweep_values),

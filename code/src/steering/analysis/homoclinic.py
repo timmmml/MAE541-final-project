@@ -77,7 +77,7 @@ def numerical_homoclinic(
         rtol=1e-11,
         atol=1e-13,
         events=apex_event,
-        dense_output=False,
+        dense_output=True,
         max_step=0.05,
     )
     if sol_f.t_events[0].size == 0:
@@ -90,9 +90,20 @@ def numerical_homoclinic(
 
     t_half = sol_f.t
     y_half = sol_f.y
-    # Mirror by time-reversal: the second half is the first half reversed,
-    # with v negated.
-    t_full = np.concatenate([-t_half[::-1][:-1], t_half])
-    theta_full = np.concatenate([y_half[0, ::-1][:-1], y_half[0]])
-    v_full = np.concatenate([-y_half[1, ::-1][:-1], y_half[1]])
+    # # Mirror by time-reversal: the second half is the first half reversed,
+    # # with v negated.
+    # t_full = np.concatenate([-t_half[::-1][:-1], t_half])
+    # theta_full = np.concatenate([y_half[0, ::-1][:-1], y_half[0]])
+    # v_full = np.concatenate([-y_half[1, ::-1][:-1], y_half[1]])
+    T_apex = t_half[-1]
+
+    # Shift so t = 0 is at the apex (ascending half: t < 0, v > 0)
+    t_ascending = t_half - T_apex              # [-T, ..., 0]
+
+    # Descending half by time-reversal symmetry around the apex:
+    # θ(-t) = θ(t), v(-t) = -v(t)
+    t_full = np.concatenate([t_ascending[:-1], -t_ascending[::-1]])
+    theta_full = np.concatenate([y_half[0, :-1], y_half[0, ::-1]])
+    v_full = np.concatenate([y_half[1, :-1], -y_half[1, ::-1]])
+
     return t_full, theta_full, v_full

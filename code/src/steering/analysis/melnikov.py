@@ -95,6 +95,8 @@ def melnikov_critical_forcing_numerical(
     damping_int = simpson(v_h * v_h, x=t)
     cos_term = simpson(v_h * np.cos(omega * t), x=t)
     sin_term = simpson(v_h * np.sin(omega * t), x=t)
+
+    print(f"Damping integral: {damping_int}, cos_term: {cos_term}, sin_term: {sin_term}")
     R = np.hypot(cos_term, sin_term)
     if R <= 0:
         return np.inf
