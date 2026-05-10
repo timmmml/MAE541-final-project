@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drosophila-steering"
+version = "0.1.0"
+description = "Dual-goal steering dynamics in the Drosophila central complex"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.12",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+sweep = [
+    "xarray>=2024.1",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-xdist",
+    "ipython",
+    "jupyter",
+    "ipywidgets>=8.0",
+    "jupyterlab>=4.0",
+    "xarray>=2024.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
