@@ -364,7 +364,147 @@ The top right panel shows a sample parameter point from the green area above the
 
 ## 4. Chaotic Behavior Under Periodic Forcing
 
+We have established that the steering circuit, when reduced to its local cubic normal form (eq. 19), is the unforced double-well Duffing oscillator, and that the bistable regime is reached through a supercritical pitchfork in $(\delta, \kappa)$ parameter space. We now ask what happens when this system is driven by periodic forcing — biologically, this models oscillatory perturbations to the steering command (e.g. visual or proprioceptive input modulated by wingbeat-locked sensory streams, or a periodic exogenous torque). The forced system reads
+
+$$
+\ddot\theta + \gamma\dot\theta = U(\theta, \delta) + F\cos(\omega t), \tag{20}
+$$
+
+where we have set $I = 1$ for notational economy (this fixes a time-scale; all reported frequencies should be read in units of $\sqrt{I^{-1}}$). The forced Duffing oscillator is the canonical example of a low-dimensional smooth system that exhibits Smale-horseshoe chaos for sufficiently strong forcing [4]. Our goal in this section is twofold: (i) to derive an analytical condition on $(F, \omega, \gamma, \delta, \kappa)$ at which chaotic dynamics first becomes possible in the reduced system, via Melnikov's method, and (ii) to verify this condition numerically in both the reduced (Duffing) and Bessel models, and to characterize a second, qualitatively distinct chaotic regime that emerges in the global $S^1$ system but is invisible to the local Duffing reduction.
+
 ### 4.1 Phase portrait and homoclinic orbit
+
+The Melnikov analysis is built around the homoclinic orbit of the unforced, undamped reduced system
+
+$$
+\ddot\theta = A\theta - B\theta^3, \tag{21}
+$$
+
+with $A, B > 0$ (the supercritical regime of §3.1). This is a planar Hamiltonian system with conserved energy
+
+$$
+H(\theta, v) = \frac{1}{2}v^2 - \frac{1}{2}A\theta^2 + \frac{1}{4}B\theta^4, \qquad v \equiv \dot\theta. \tag{22}
+$$
+
+The level sets of $H$ foliate the phase plane. The origin is a hyperbolic saddle with $H(0,0) = 0$ and unstable/stable eigenvalues $\pm\sqrt{A}$; the two centers at $\theta_\pm = \pm\sqrt{A/B}$ have $H(\theta_\pm, 0) = -A^2/(4B) < 0$ and linearized frequency $\omega_0 = \sqrt{2A}$. The zero-energy level set $H = 0$ consists of two homoclinic loops joining the saddle to itself, one in each half-plane. Solving $\frac{1}{2}\dot\theta^2 = \frac{1}{2}A\theta^2 - \frac{1}{4}B\theta^4$ on the right branch yields the closed-form
+
+$$
+\boxed{\;\theta_0(t) = \sqrt{\frac{2A}{B}}\operatorname{sech}(\sqrt{A}\,t), \qquad v_0(t) = -\sqrt{\frac{2A}{B}}\sqrt{A}\,\operatorname{sech}(\sqrt{A}\,t)\tanh(\sqrt{A}\,t).\;} \tag{23}
+$$
+
+This orbit reaches its apex $\theta_{\max} = \sqrt{2A/B}$ at $t = 0$ and approaches the saddle exponentially as $t \to \pm\infty$ at rate $\sqrt{A}$. The corresponding loop in the left half-plane is obtained by $\theta_0 \to -\theta_0$; the union forms the figure-eight separatrix that divides the phase plane into the two wells (oscillation around either center) and the region of unbounded growth (excluded in our problem by the global structure of the Bessel $U$, but present in the cubic truncation).
+
+The same construction does **not** carry over to the full Bessel system without modification. The Bessel steering drive $U(\theta, \delta)$ on $S^1$ has additional fixed points near $\theta = \pm\pi$ (the "anti-midpoint" of the two goals; cf. §3.1 and Figure 2), giving rise to a richer phase-cylinder structure with multiple saddles and the possibility of heteroclinic connections between them. We will return to this point in §4.4. For the local Melnikov analysis we adopt a **second approximation**, in addition to the Taylor truncation already made in §1.2.5: we treat the phase cylinder $S^1 \times \mathbb{R}$ as the plane $\mathbb{R}^2$, on which the homoclinic (23) is well-defined. This planar approximation is internally consistent with the cubic truncation, since both are controlled by the same small parameter $\theta_{\max} \ll \pi$.
+
+### 4.2 The Melnikov criterion
+
+Following Guckenheimer & Holmes [4, §4.5], we cast the forced damped system (20) as an $O(\epsilon)$ perturbation of the Hamiltonian system (21):
+
+$$
+\dot\theta = v, \qquad \dot v = A\theta - B\theta^3 + \epsilon\bigl[-\gamma v + F\cos\omega t\bigr], \tag{24}
+$$
+
+with the understanding that $\gamma$ and $F$ are formally $O(1)$ and the perturbation strength is controlled by $\epsilon \ll 1$. The Melnikov function $M(t_0)$ measures, to leading order in $\epsilon$, the signed distance between the stable and unstable manifolds of the perturbed saddle (now a hyperbolic periodic orbit of period $2\pi/\omega$ in the extended phase space) at a fixed phase $\omega t_0$ of the forcing cycle. Simple zeros of $M(t_0)$ correspond to transverse intersections of these manifolds, and by the Smale-Birkhoff theorem imply the existence of a Smale horseshoe — hence symbolic dynamics, positive topological entropy, and sensitive dependence on initial conditions on the invariant set [4, Theorem 4.5.3].
+
+The Melnikov function for a planar Hamiltonian system $\dot{\mathbf{x}} = J\nabla H + \epsilon\mathbf{g}(\mathbf{x}, t)$ with homoclinic orbit $\boldsymbol{\gamma}_0(t)$ is the integral
+
+$$
+M(t_0) = \int_{-\infty}^{\infty} \nabla H(\boldsymbol{\gamma}_0(\tau)) \cdot \mathbf{g}(\boldsymbol{\gamma}_0(\tau), \tau + t_0)\,d\tau, \tag{25}
+$$
+
+evaluated along the unperturbed orbit. In our case $\mathbf{g} = (0, -\gamma v + F\cos\omega t)^T$ and $\nabla H = (-A\theta - B\theta^3, v)^T = (-\dot v_0, v_0)$ (the second equality using the unperturbed equation of motion), so $\nabla H \cdot \mathbf{g} = v_0(\tau)\bigl[-\gamma v_0(\tau) + F\cos\omega(\tau + t_0)\bigr]$ and the integral splits into a damping term and a forcing term:
+
+$$
+M(t_0) = -\gamma \underbrace{\int_{-\infty}^{\infty} v_0(\tau)^2\,d\tau}_{\equiv\,D} + F\int_{-\infty}^{\infty} v_0(\tau)\cos\omega(\tau + t_0)\,d\tau. \tag{26}
+$$
+
+The damping integral $D$ is shift-invariant. Substituting (23) and $u = \sqrt{A}\,\tau$,
+
+$$
+D = \frac{2A^2}{B}\int_{-\infty}^{\infty}\operatorname{sech}^2 u\,\tanh^2 u\,du \cdot \frac{1}{\sqrt{A}} = \frac{4A^{3/2}}{3B}, \tag{27}
+$$
+
+using the elementary integral $\int_{-\infty}^{\infty}\operatorname{sech}^2 u\,\tanh^2 u\,du = 2/3$. For the forcing integral, expand $\cos\omega(\tau + t_0) = \cos\omega\tau\cos\omega t_0 - \sin\omega\tau\sin\omega t_0$. Since $v_0(\tau)$ is odd in $\tau$, the $\cos\omega\tau$ piece (odd $\times$ even) integrates to zero, leaving
+
+$$
+\int_{-\infty}^{\infty} v_0(\tau)\cos\omega(\tau + t_0)\,d\tau = -\sin\omega t_0\int_{-\infty}^{\infty} v_0(\tau)\sin\omega\tau\,d\tau.
+$$
+
+The remaining integral is the sine transform of $-\sqrt{2A/B}\cdot\sqrt{A}\operatorname{sech}(\sqrt{A}\,\tau)\tanh(\sqrt{A}\,\tau)$. Using the identity
+
+$$
+\int_{-\infty}^{\infty} \operatorname{sech}(\alpha\tau)\tanh(\alpha\tau)\sin\omega\tau\,d\tau = -\frac{\pi\omega}{\alpha^2}\operatorname{sech}\!\left(\frac{\pi\omega}{2\alpha}\right),
+$$
+
+which follows from contour integration over the poles of $\operatorname{sech}$ at $\tau = i\pi(n + \frac{1}{2})/\alpha$, with $\alpha = \sqrt{A}$ we obtain
+
+$$
+\int_{-\infty}^{\infty} v_0(\tau)\sin\omega\tau\,d\tau = \pi\omega\sqrt{\frac{2}{B}}\,\operatorname{sech}\!\left(\frac{\pi\omega}{2\sqrt{A}}\right). \tag{28}
+$$
+
+Combining (26)–(28),
+
+$$
+\boxed{\;M(t_0) = -\frac{4\gamma A^{3/2}}{3B} - F\pi\omega\sqrt{\frac{2}{B}}\,\operatorname{sech}\!\left(\frac{\pi\omega}{2\sqrt{A}}\right)\sin\omega t_0.\;} \tag{29}
+$$
+
+$M(t_0)$ has simple zeros if and only if the amplitude of the sinusoidal part exceeds the damping bias, which yields the **Melnikov threshold**
+
+$$
+\boxed{\;F_{\text{crit}}(\omega) = \frac{4\gamma A}{3\pi\omega\sqrt{2B}}\cosh\!\left(\frac{\pi\omega}{2\sqrt{A}}\right).\;} \tag{30}
+$$
+
+Two features of (30) deserve emphasis. First, $F_{\text{crit}} \to \infty$ as $\omega \to 0$ (linear divergence) and as $\omega \to \infty$ (exponential divergence through $\cosh$): both very-low-frequency forcing (which shifts the equilibrium adiabatically rather than exciting the homoclinic) and very-high-frequency forcing (which averages out before the orbit can respond) are inefficient at inducing chaos. The threshold is minimized at an intermediate "homoclinic-resonance" frequency $\omega^* \approx 0.76\sqrt{A}$, obtained from $\tanh(\pi\omega^*/2\sqrt{A}) = 2\sqrt{A}/(\pi\omega^*)$. Second, the dependence on the well structure enters only through the two coefficients $A, B$ — but these in turn depend nontrivially on $(\delta, \kappa, S, A_{\text{syn}})$ via eqs. (14) and (17), so (30) implicitly maps the chaos-onset surface into circuit parameter space.
+
+### 4.3 Numerical verification near the homoclinic-resonance frequency
+
+We fix the parameters $\kappa = 1.0$, $\delta = 1.49$ (well inside the bistable regime of Figure 2), and $\gamma = 0.1$. This yields $A \approx 0.18$, $B \approx 1.31$, giving a saddle eigenvalue $\sqrt{A} \approx 0.42$ and well frequency $\omega_0 = \sqrt{2A} \approx 0.60$. We choose the forcing frequency
+
+$$
+\omega = \sqrt{A} \approx 0.42,
+$$
+
+which is the convention used in Guckenheimer & Holmes [4] for the canonical twin-well Duffing. This $\omega$ is close to (though not exactly at) the homoclinic-resonance optimum, with $\cosh(\pi\omega/2\sqrt{A}) = \cosh(\pi/2) \approx 2.51$. Substituting into (30) gives $F_{\text{crit}} \approx 0.012$.
+
+We then perform a loose grid search over the forcing amplitude,
+
+$$
+F \in \{1.0,\, 1.5,\, 2.0,\, 2.5,\, 3.0\} \times F_{\text{crit}},
+$$
+
+integrating (20) for the reduced Duffing model and for the 12-neuron discrete circuit model from initial conditions in the right well ($\theta_0 = \sqrt{A/B}, v_0 = 0$). For each run we discard the first 200 forcing periods as transient and record the next 200 stroboscopic samples $(\theta_n, v_n) = (\theta(t_n), v(t_n))$ at $t_n = 2\pi n/\omega$. We then sweep $F$ over a denser grid to construct the Poincaré bifurcation diagram $\theta_n$ vs $F$.
+
+**Figure 4** presents three rows: (A) reduced Duffing, (B) 12-neuron full circuit at $\delta = 1.49$ (the bistable regime), and (C) 6-neuron full circuit at the same bistable regime, but as previously shown only has a single attractor (hence belonging to the monostable regime). Each row contains four panels: (i) stroboscopic Poincaré sections at the five grid-search values of $F$; (ii) the Poincaré bifurcation diagram on a narrow zoom $F \in [0, 0.1]$ revealing the route to chaos; (iii) full phase-space trajectories at the same five $F$ values; (iv) the bifurcation diagram on a wide zoom $F \in [0, 10]$ exposing the regime of large forcing studied in §4.4.
+
+Across both the reduced Duffing (row A) and the 12-neuron circuit (row B), the same qualitative scenario unfolds. At $F = F_{\text{crit}}$ (column 1 of panels i and iii) the attractor remains a period-1 orbit confined to the right well — the horseshoe predicted by Melnikov has been born, but it is a chaotic *saddle*, not an attractor. By $F \approx 1.5\,F_{\text{crit}}$ (column 2) the periodic orbit has lost stability and the trajectory has filled out a strange attractor that visibly explores both wells, crossing the unperturbed separatrix infinitely often. The bifurcation diagrams in panel (ii) show the characteristic interleaving of chaotic bands and narrow periodic windows in this $F$ range. By $F \approx 2.5\text{–}3\,F_{\text{crit}}$ (columns 4–5) the trajectory has re-collapsed onto a periodic orbit of large amplitude, encircling both centers.
+
+The factor-of-$1.5$ gap between the Melnikov threshold and the visible onset of chaos is consistent with the topological-vs-metric distinction noted above and with values reported by Holmes for the canonical Duffing system at comparable damping and frequency ratios [4, §4.6]. The agreement between the reduced model (A) and the 12-neuron circuit (B) is quantitatively close, with the chaos band of (B) shifted slightly to higher $F$. This validates the Duffing reduction as a faithful predictor of chaos onset in the biological circuit, at least in this parameter regime.
+
+Row (C), where the system sits below the pitchfork curve, provides a useful control: here the unforced system has a single stable fixed point and no homoclinic orbit, so the Melnikov machinery does not apply. Correspondingly, the trajectories in panel (C-iii) remain periodic across the entire grid — no chaos emerges at these forcing amplitudes. The strange attractor of (A) and (B) is genuinely a consequence of the double-well structure produced by the pitchfork bifurcation.
+
+We restrict attention to initial conditions in the right well throughout. By the $\theta \to -\theta$ symmetry of $U$, there exists a mirror-image strange attractor for initial conditions in the left well, with the same Poincaré bifurcation structure under $\theta \to -\theta$. For sufficiently large $F$ the two attractors merge into a single symmetric one (visible in the wide-zoom panel iv), but their structure for $F \sim F_{\text{crit}}$ is independent.
+
+### 4.4 A second chaotic regime: phase-slipping and the pendulum analogy
+
+The wide-zoom bifurcation diagrams in panels (A-iv) and (B-iv) of Figure 4, together with the snapshots in **Figure 5**, reveal a striking divergence between the reduced and full systems at large forcing amplitudes ($F \gtrsim 2$, two orders of magnitude above $F_{\text{crit}}$).
+
+In the reduced Duffing model (Figure 5A), increasing $F$ eventually drives the trajectory out of the chaotic regime into a large-amplitude periodic orbit that encircles both wells. The Poincaré section in this regime is a small number of isolated points (Figure 5A-i, $F = 2.25$ through $3.0$) and the phase-space trajectory (Figure 5A-ii) is a smooth closed curve oscillating between $\theta \approx \pm 3$. This is the "global" periodic attractor familiar from the standard forced Duffing oscillator.
+
+The full circuit (Figure 5B) behaves qualitatively differently in the same parameter range. Rather than settling onto a closed periodic orbit, the trajectory undergoes **phase slipping**: $\theta$ executes net rotations around the cylinder $S^1$ rather than remaining bounded. The Poincaré sections (Figure 5B-i) are wide diffuse clouds extending across the full range of $\theta \in [-\pi, \pi]$ and reaching velocities $|v| \sim 10$, an order of magnitude larger than in the Duffing-type chaos of Figure 4. The phase trajectories (Figure 5B-ii) wrap repeatedly around the cylinder, with the heading drifting persistently in one direction while the velocity executes large excursions.
+
+This phenomenon is invisible to the Duffing reduction because the cubic truncation does not "know" about the global $S^1$ topology of the heading variable. It is, however, naturally understood through analogy with the forced damped pendulum,
+
+$$
+\ddot\varphi + \gamma\dot\varphi + \sin\varphi = F\cos\omega t,
+$$
+
+which has been studied extensively as a model system for chaos on the phase cylinder [4, §2.2 and §4.8]. The pendulum has two equivalent saddle points at $\varphi = \pm\pi$ (identified on $S^1$) connected by two heteroclinic orbits — the upper and lower branches of the separatrix that bound the regions of librating versus rotating motion. Under periodic forcing, transverse intersections of the stable and unstable manifolds of these heteroclinic connections generate a chaotic invariant set on which the trajectory irregularly switches between librating and rotating behavior, with the rotating component manifesting macroscopically as phase slip [4, §4.8].
+
+Our full Bessel system inherits this pendulum-like structure: the steering drive $U(\theta, \delta)$ vanishes at $\theta = 0$ (the unstable saddle between the two goals, when bistable) and at $\theta = \pm\pi$ (the saddles associated with the anti-midpoint of the two goals; cf. Figure 2 right panel). When the trajectory has enough energy to traverse the global separatrix, it can transit between adjacent saddles, producing phase slipping analogous to the rotating regime of the forced pendulum. The chaotic dynamics of Figure 5B is most naturally described as transverse intersection of the heteroclinic manifolds connecting the $\theta = 0$ and $\theta = \pm\pi$ saddles, rather than the homoclinic intersection that governs Figure 4.
+
+A revealing comparison is provided by row C of Figure 5, which uses the same large-$F$ protocol but where the two goals effectively merge (the monostable regime of Figure 4C). In this configuration the cubic reduction predicts no chaos at any $F$ — there is no double-well structure and no homoclinic orbit. Yet the full system (Figure 5C) still exhibits phase-slipping chaos at large $F$, qualitatively indistinguishable from Figure 5B. This is direct evidence that the second chaotic regime is **not** a consequence of the goal-induced double well, but of the global $S^1$ structure of the steering drive. The reduced Duffing model is silent on this regime precisely because it is local: the cubic truncation captures the saddle at $\theta = 0$ but discards the saddles at $\theta = \pm\pi$.
+
+A detailed Melnikov analysis of phase-slipping chaos would require: (i) characterizing the heteroclinic orbits connecting $\theta = 0$ and $\theta = \pm\pi$ in the Bessel system, which do not admit a simple closed form; (ii) computing the Melnikov integral along each heteroclinic branch using the numerical orbit; (iii) accounting for the codimension of the heteroclinic chain on the cylinder. Each step is in principle straightforward but operationally involved, and the resulting expression for the chaos threshold would depend on $(\delta, \kappa, \gamma, \omega)$ through circuit-specific integrals analogous to (28). We leave this as a direction for future work. For the present, we content ourselves with the numerical demonstration that two distinct chaotic regimes exist in the steering circuit — one captured faithfully by the Duffing reduction near $F_{\text{crit}}$, and a second, global regime accessible only through the full Bessel or neural circuit model.
 
 
 ## 5. Discussion
