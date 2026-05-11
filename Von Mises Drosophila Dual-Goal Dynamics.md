@@ -527,5 +527,8 @@ For ease of cross-reference:
 - $f(x) = x^2$: quadratic nonlinearity (conjunctive tuning).
 - $U(\theta, \delta)$: total steering drive, $G_{PFL3} - G_{PFL3R}$.
 
+<<<<<<< HEAD
 ![[Pasted image 20260510223250.png]]
 ![[Pasted image 20260510223801.png]]
+=======
+>>>>>>> 73d40a9ee4322a3933c2344f71e95ae81b2e519a
